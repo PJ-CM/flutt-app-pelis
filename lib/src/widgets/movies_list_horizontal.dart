@@ -55,7 +55,7 @@ class MoviesListHorizontal extends StatelessWidget {
   }
 
   Widget _card(BuildContext context, Pelicula pelicula) {
-    return Container(
+    final card = Container(
       margin: EdgeInsets.only(right: 15.0),
       child: Column(
         children: <Widget>[
@@ -80,6 +80,14 @@ class MoviesListHorizontal extends StatelessWidget {
           ),
         ],
       ),
+    );
+
+    return GestureDetector(
+      child: card,
+      onTap: () {
+        print('ID y Tit de la peli: [${pelicula.id}] - ${pelicula.title}');
+        Navigator.pushNamed(context, 'movieDetail', arguments: pelicula);
+      },
     );
   }
 
