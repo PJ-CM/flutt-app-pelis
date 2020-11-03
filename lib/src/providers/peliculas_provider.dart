@@ -1,12 +1,31 @@
 import 'package:http/http.dart' as http;
+
 import 'dart:convert';
-// import 'dart:async';
+import 'dart:async';
+
 import 'package:flutt_pelis/src/models/pelicula_model.dart';
 
 class PeliculasProvider {
   String _apikey = '1317b2225ba500e104112c9f5c2e0c71';
   String _url = 'api.themoviedb.org';
   String _language = 'es-ES';
+
+  int _popularesPage = 0;
+
+  List<Pelicula> _populares = new List();
+
+  final _popularesStreamController =
+      StreamController<List<Pelicula>>.broadcast();
+
+  Function(List<Pelicula>) get popularesSink =>
+      _popularesStreamController.sink.add;
+
+  Stream<List<Pelicula>> get popularesStream =>
+      _popularesStreamController.stream;
+
+  void disposeStreams() {
+    _popularesStreamController?.close();
+  }
 
   /*
   // CON EL CÓDIGO OPTIMIZADO
@@ -15,17 +34,38 @@ class PeliculasProvider {
   /*
   // Optimizado :: Forma 2d2
   // ============================================================ */
-  Future<List<Pelicula>> getEnCines() =>
-      _getPeliculasList('/movie/now_playing', {
+  Future<List<Pelicula>> getEnCines() async =>
+      await _getPeliculasList('/movie/now_playing', {
         'api_key': _apikey,
         'language': _language,
       });
 
-  Future<List<Pelicula>> getPopulares() =>
-      _getPeliculasList('/movie/now_playing', {
-        'api_key': _apikey,
-        'language': _language,
-      });
+  // Future<List<Pelicula>> getPopulares() =>
+  //     _getPeliculasList('/movie/now_playing', {
+  //       'api_key': _apikey,
+  //       'language': _language,
+  //     });
+
+  Future<List<Pelicula>> getPopulares() async {
+    _popularesPage++;
+
+    final resp = await _getPeliculasList('/movie/now_playing', {
+      'api_key': _apikey,
+      'language': _language,
+      'page': _popularesPage.toString(),
+    });
+
+    _populares.addAll(resp);
+    popularesSink(_populares);
+
+    return resp;
+
+    // return await _getPeliculasList('/movie/now_playing', {
+    //   'api_key': _apikey,
+    //   'language': _language,
+    //   'page': _popularesPage.toString(),
+    // });
+  }
 
   Future<List<Pelicula>> _getPeliculasList(
       String urlSubPath, Map<String, String> params) async {
