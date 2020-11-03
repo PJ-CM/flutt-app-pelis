@@ -40,17 +40,46 @@ class MoviesListHorizontal extends StatelessWidget {
       //  aplicar un 25%
       //  Y, con el título por cada película, se hace necesario un 0.28
       height: _screenSize.height * 0.20, // con
-      child: PageView(
-        children: _cards(context),
-        controller: _pageController,
-        pageSnapping: false,
-      ),
-      // child: PageView.builder(
+      // child: PageView(
+      //   children: _cards(context),
       //   controller: _pageController,
       //   pageSnapping: false,
-      //   itemCount: peliculas.length,
-      //   itemBuilder: (context, i) => _card(context, peliculas[i]),
       // ),
+      child: PageView.builder(
+        controller: _pageController,
+        pageSnapping: false,
+        itemCount: peliculas.length,
+        itemBuilder: (context, i) => _card(context, peliculas[i]),
+      ),
+    );
+  }
+
+  Widget _card(BuildContext context, Pelicula pelicula) {
+    return Container(
+      margin: EdgeInsets.only(right: 15.0),
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: FadeInImage(
+                placeholder: AssetImage('assets/img/no-image.jpg'),
+                image: NetworkImage(pelicula.getPosterImg()),
+                fit: BoxFit.cover,
+                height: 160.0,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          Text(
+            pelicula.title,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.caption,
+          ),
+        ],
+      ),
     );
   }
 
