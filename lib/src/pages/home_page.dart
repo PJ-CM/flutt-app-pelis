@@ -13,7 +13,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    peliculasProvider.getPopulares();
+    // peliculasProvider.getPopulares();
+    if (peliculasProvider.getTotPopularesCargadas() == 0) {
+      peliculasProvider.getPopulares();
+    }
 
     return Scaffold(
       appBar: AppBar(

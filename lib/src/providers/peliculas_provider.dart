@@ -88,6 +88,9 @@ class PeliculasProvider {
     return peliculas.items;
   }
 
+  // Para optimizar la carga del listado de populares al cargar o volver al HOME
+  int getTotPopularesCargadas() => _populares.length;
+
   /*
   // Optimizado :: Forma 1d2
   // ============================================================ */
