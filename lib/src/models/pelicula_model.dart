@@ -86,6 +86,14 @@ class Pelicula {
       return 'https://image.tmdb.org/t/p/w500/$posterPath';
     }
   }
+
+  getBackgroundImg() {
+    if (backdropPath == null) {
+      return 'https://ia-latam.com/wp-content/uploads/2018/12/No-image-found-1.jpg';
+    } else {
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
+    }
+  }
 }
 
 // enum OriginalLanguage { EN, KO, JA, IT }
