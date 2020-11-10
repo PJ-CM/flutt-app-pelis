@@ -1,12 +1,43 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutt_pelis/src/providers/peliculas_provider.dart';
 import 'package:flutt_pelis/src/models/pelicula_model.dart';
+import 'package:flutt_pelis/src/models/actores_model.dart';
 
 class MovieDetail extends StatelessWidget {
   static final pageName = 'movieDetail';
 
+  final _pageController = new PageController(
+    initialPage: 1,
+    viewportFraction: 0.3,
+  );
+
   @override
   Widget build(BuildContext context) {
+    // Tamaño de la pantalla del dispositivo
+    final _screenSize = MediaQuery.of(context).size;
+
+    _pageController.addListener(() {
+      if (_pageController.position != null) {
+        if (_pageController.position.pixels ==
+            _pageController.position.maxScrollExtent) {
+          _pageController.position.animateTo(
+            _pageController.position.maxScrollExtent - _screenSize.width * 0.35,
+            duration: Duration(milliseconds: 1000),
+            curve: Curves.elasticOut,
+          );
+        }
+        if (_pageController.position.pixels ==
+            _pageController.position.minScrollExtent) {
+          _pageController.position.animateTo(
+            _screenSize.width * 0.3,
+            duration: Duration(milliseconds: 1000),
+            curve: Curves.elasticOut,
+          );
+        }
+      }
+    });
+
     final Pelicula pelicula = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
@@ -18,13 +49,15 @@ class MovieDetail extends StatelessWidget {
         slivers: <Widget>[
           _crearAppBar(pelicula),
           SliverList(
-              delegate: SliverChildListDelegate([
-            SizedBox(
-              height: 10.0,
-            ),
-            _posterTitle(context, pelicula),
-            _description(context, pelicula),
-          ])),
+            delegate: SliverChildListDelegate([
+              SizedBox(
+                height: 10.0,
+              ),
+              _posterTitle(context, pelicula),
+              _description(context, pelicula),
+              _createCasting(pelicula),
+            ]),
+          ),
         ],
       ),
     );
@@ -149,5 +182,58 @@ class MovieDetail extends StatelessWidget {
     //     ],
     //   ),
     // );
+  }
+
+  Widget _createCasting(Pelicula pelicula) {
+    final peliculasProvider = new PeliculasProvider();
+
+    return FutureBuilder(
+      future: peliculasProvider.getCast(pelicula.id.toString()),
+      // Este initialData se sustituirá por una imagen de precarga
+      // initialData: InitialData,
+      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+        if (snapshot.hasData) {
+          return _createActoresPageView(snapshot.data);
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _createActoresPageView(List<Actor> actores) {
+    return SizedBox(
+      height: 200.0,
+      child: PageView.builder(
+        pageSnapping: false,
+        controller: _pageController,
+        itemCount: actores.length,
+        itemBuilder: (context, i) => _actorCard(actores[i]),
+      ),
+    );
+  }
+
+  Widget _actorCard(Actor actor) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: FadeInImage(
+              placeholder: AssetImage('assets/img/no-image.jpg'),
+              image: NetworkImage(actor.getFoto()),
+              height: 150.0,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Text(
+            actor.name,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
   }
 }

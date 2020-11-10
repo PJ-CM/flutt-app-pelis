@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:flutt_pelis/src/models/pelicula_model.dart';
+import 'package:flutt_pelis/src/models/actores_model.dart';
 
 class PeliculasProvider {
   String _apikey = '1317b2225ba500e104112c9f5c2e0c71';
@@ -86,6 +87,20 @@ class PeliculasProvider {
     final peliculas = new Peliculas.fromJsonList(decodedData['results']);
 
     return peliculas.items;
+  }
+
+  Future<List<Actor>> getCast(String peliculaId) async {
+    final url = Uri.https(_url, '3/movie/$peliculaId/credits', {
+      'api_key': _apikey,
+      'language': _language,
+    });
+
+    final resp = await http.get(url);
+    final decodedData = json.decode(resp.body);
+
+    final cast = new Cast.fromJsonList(decodedData['cast']);
+
+    return cast.actores;
   }
 
   // Para optimizar la carga del listado de populares al cargar o volver al HOME
