@@ -1,5 +1,6 @@
 import 'package:flutt_pelis/src/models/pelicula_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_swiper/flutter_swiper.dart';
 
@@ -31,24 +32,41 @@ class CardSwiper extends StatelessWidget {
       //---------------------------------------------------------------------------
       child: Swiper(
         itemBuilder: (BuildContext context, int index) {
-          //Tras Englobar el Image.network dentro del ClipRRect, para poder redondear
-          //las esquinas de los bordes de las tarjetas.
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
+          movies[index].uniqueId = '${movies[index].id}-enCines';
+          // Otra opción de identificador único...
+          // movies[index].uniqueId = UniqueKey().toString();
 
-            //A modo de prueba...
-            ////child: Text('${movies[index]}'),
+          return Hero(
+            tag: movies[index].uniqueId,
+            //Tras Englobar el Image.network dentro del ClipRRect, para poder redondear
+            //las esquinas de los bordes de las tarjetas.
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
 
-            // child: Image.network(
-            //   "http://via.placeholder.com/350x150",
-            //   fit: BoxFit.fill,
-            //   //fit: BoxFit.cover,
-            // ),
+              //A modo de prueba...
+              ////child: Text('${movies[index]}'),
 
-            child: FadeInImage(
-              image: NetworkImage(movies[index].getPosterImg()),
-              placeholder: AssetImage('assets/img/no-image.jpg'),
-              fit: BoxFit.cover,
+              // child: Image.network(
+              //   "http://via.placeholder.com/350x150",
+              //   fit: BoxFit.fill,
+              //   //fit: BoxFit.cover,
+              // ),
+
+              child: GestureDetector(
+                onTap: () {
+                  //Este TIEMPO altera la velocidad del Hero Animation
+                  timeDilation = 1.5;
+                  print(
+                      'ID y Tit de la peli: [${movies[index].id}] - ${movies[index].title}');
+                  Navigator.pushNamed(context, 'movieDetail',
+                      arguments: movies[index]);
+                },
+                child: FadeInImage(
+                  image: NetworkImage(movies[index].getPosterImg()),
+                  placeholder: AssetImage('assets/img/no-image.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           );
         },

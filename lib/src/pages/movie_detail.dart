@@ -55,7 +55,7 @@ class MovieDetail extends StatelessWidget {
               ),
               _posterTitle(context, pelicula),
               _description(context, pelicula),
-              _createCasting(pelicula),
+              _createCasting(context, pelicula),
             ]),
           ),
         ],
@@ -94,11 +94,14 @@ class MovieDetail extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: Row(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Image(
-              image: NetworkImage(pelicula.getPosterImg()),
-              height: 150.0,
+          Hero(
+            tag: pelicula.uniqueId,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Image(
+                image: NetworkImage(pelicula.getPosterImg()),
+                height: 150.0,
+              ),
             ),
           ),
           SizedBox(
@@ -184,22 +187,39 @@ class MovieDetail extends StatelessWidget {
     // );
   }
 
-  Widget _createCasting(Pelicula pelicula) {
+  Widget _createCasting(BuildContext context, Pelicula pelicula) {
     final peliculasProvider = new PeliculasProvider();
 
-    return FutureBuilder(
-      future: peliculasProvider.getCast(pelicula.id.toString()),
-      // Este initialData se sustituirá por una imagen de precarga
-      // initialData: InitialData,
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-        if (snapshot.hasData) {
-          return _createActoresPageView(snapshot.data);
-        } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
+            child: Text(
+              'Reparto:',
+              style: Theme.of(context).textTheme.subtitle2,
+            ),
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          FutureBuilder(
+            future: peliculasProvider.getCast(pelicula.id.toString()),
+            // Este initialData se sustituirá por una imagen de precarga
+            // initialData: InitialData,
+            builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+              if (snapshot.hasData) {
+                return _createActoresPageView(snapshot.data);
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutt_pelis/src/models/pelicula_model.dart';
+import 'package:flutter/scheduler.dart';
 
 class MoviesListHorizontal extends StatelessWidget {
   final List<Pelicula> peliculas;
@@ -55,18 +56,25 @@ class MoviesListHorizontal extends StatelessWidget {
   }
 
   Widget _card(BuildContext context, Pelicula pelicula) {
+    pelicula.uniqueId = '${pelicula.id}-popular';
+    // Otra opción de identificador único...
+    // pelicula.uniqueId = UniqueKey().toString();
+
     final card = Container(
       margin: EdgeInsets.only(right: 15.0),
       child: Column(
         children: <Widget>[
           Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: FadeInImage(
-                placeholder: AssetImage('assets/img/no-image.jpg'),
-                image: NetworkImage(pelicula.getPosterImg()),
-                fit: BoxFit.cover,
-                height: 160.0,
+            child: Hero(
+              tag: pelicula.uniqueId,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20.0),
+                child: FadeInImage(
+                  placeholder: AssetImage('assets/img/no-image.jpg'),
+                  image: NetworkImage(pelicula.getPosterImg()),
+                  fit: BoxFit.cover,
+                  height: 160.0,
+                ),
               ),
             ),
           ),
@@ -85,6 +93,8 @@ class MoviesListHorizontal extends StatelessWidget {
     return GestureDetector(
       child: card,
       onTap: () {
+        //Este TIEMPO altera la velocidad del Hero Animation
+        timeDilation = 1.5;
         print('ID y Tit de la peli: [${pelicula.id}] - ${pelicula.title}');
         Navigator.pushNamed(context, 'movieDetail', arguments: pelicula);
       },
