@@ -1,3 +1,4 @@
+import 'package:flutt_pelis/src/search/search_delegate.dart';
 import 'package:flutter/material.dart';
 
 ////import 'package:flutter_swiper/flutter_swiper.dart';
@@ -26,7 +27,13 @@ class HomePage extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: DataSearch(),
+                // query: 'Término por defecto',
+              );
+            },
           ),
         ],
       ),
@@ -105,7 +112,7 @@ class HomePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 14.0,
+            height: 5.0,
           ),
           // Text(
           //   '-: Películas Más Populares :-',

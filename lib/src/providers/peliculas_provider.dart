@@ -37,10 +37,10 @@ class PeliculasProvider {
   // Optimizado :: Forma 2d2
   // ============================================================ */
   Future<List<Pelicula>> getEnCines() async =>
-      await _getPeliculasList('/movie/now_playing', {
-        'api_key': _apikey,
-        'language': _language,
-      });
+    await _getPeliculasList('/movie/now_playing', {
+      'api_key': _apikey,
+      'language': _language,
+    });
 
   // Future<List<Pelicula>> getPopulares() =>
   //     _getPeliculasList('/movie/now_playing', {
@@ -105,6 +105,13 @@ class PeliculasProvider {
 
   // Para optimizar la carga del listado de populares al cargar o volver al HOME
   int getTotPopularesCargadas() => _populares.length;
+
+  Future<List<Pelicula>> searchMovie(String query) async =>
+    await _getPeliculasList('/search/movie', {
+      'api_key': _apikey,
+      'language': _language,
+      'query': query,
+    });
 
   /*
   // Optimizado :: Forma 1d2
